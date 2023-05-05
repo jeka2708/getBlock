@@ -1,0 +1,16 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "/proto/go_proto";
+
+service Controller {
+
+  rpc GetAddress (Request) returns (Response) {}
+
+}
+
+message Request {}
+
+message Response {
+  string message = 1;
+}
