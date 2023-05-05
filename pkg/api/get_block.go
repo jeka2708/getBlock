@@ -26,12 +26,14 @@ func (gb *GetBlockApi) GetAddress(ctx context.Context, in *pb.Request) (*pb.Resp
 	response, err := gb.Call("eth_blockNumber")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	blockNum, err := strconv.ParseInt(response.Result.(string)[2:], 16, 64)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	result := models.Result{}
@@ -43,6 +45,10 @@ func (gb *GetBlockApi) GetAddress(ctx context.Context, in *pb.Request) (*pb.Resp
 			block := models.BlockByNumberResponse{}
 			numberBlock := fmt.Sprintf("0x%s", strconv.FormatInt(i, 16))
 			err = gb.CallFor(&block, "eth_getBlockByNumber", numberBlock, true)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 			if len(block.Transactions) == 0 {
 				return
 			}
@@ -51,10 +57,6 @@ func (gb *GetBlockApi) GetAddress(ctx context.Context, in *pb.Request) (*pb.Resp
 			result.Unlock()
 		}(i)
 
-	}
-
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	wg.Wait()
