@@ -17,20 +17,37 @@ type GetBlockApi struct {
 	*clients.GetBlockClient
 }
 
+const (
+	lastBlock     = "eth_blockNumber"
+	fullBlockInfo = "eth_getBlockByNumber"
+)
+
 func NewGetBlock(apiKey string) *GetBlockApi {
 	return &GetBlockApi{
 		clients.NewGetBlockClient(apiKey),
 	}
 }
+
+func (gb *GetBlockApi) getLastBlock() (string, error) {
+	response, err := gb.Call(lastBlock)
+	log.Println(response.Result.(string)[2:])
+
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return response.Result.(string)[2:], nil
+}
+
 func (gb *GetBlockApi) GetAddress(ctx context.Context, in *pb.Request) (*pb.Response, error) {
-	response, err := gb.Call("eth_blockNumber")
+	lastBlock, err := gb.getLastBlock()
 
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	blockNum, err := strconv.ParseInt(response.Result.(string)[2:], 16, 64)
+	blockNum, err := strconv.ParseInt(lastBlock, 16, 64)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -44,7 +61,8 @@ func (gb *GetBlockApi) GetAddress(ctx context.Context, in *pb.Request) (*pb.Resp
 			defer wg.Done()
 			block := models.BlockByNumberResponse{}
 			numberBlock := fmt.Sprintf("0x%s", strconv.FormatInt(i, 16))
-			err = gb.CallFor(&block, "eth_getBlockByNumber", numberBlock, true)
+			err = gb.CallFor(&block, fullBlockInfo, numberBlock, true)
+
 			if err != nil {
 				log.Println(err)
 				return

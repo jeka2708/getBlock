@@ -3,7 +3,6 @@ package models
 import "sync"
 
 type BlockByNumberResponse struct {
-	Addr         int64
 	Transactions []Transaction `json:"transactions"`
 }
 

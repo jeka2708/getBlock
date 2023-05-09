@@ -14,7 +14,7 @@ import (
 
 var (
 	port   = flag.String("port", ":8080", "The server port")
-	apiKey = flag.String("api_key", "", "The requiredgi api key")
+	apiKey = flag.String("api_key", "", "The required api key")
 )
 
 func main() {
