@@ -30,7 +30,6 @@ func NewGetBlock(apiKey string) *GetBlockApi {
 
 func (gb *GetBlockApi) getLastBlock() (string, error) {
 	response, err := gb.Call(lastBlock)
-	log.Println(response.Result.(string)[2:])
 
 	if err != nil {
 		log.Println(err)
