@@ -12,5 +12,5 @@ service Controller {
 message Request {}
 
 message Response {
-  string message = 1;
+  string address = 1;
 }
